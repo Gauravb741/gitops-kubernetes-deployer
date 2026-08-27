@@ -1,405 +1,200 @@
-I fetched and reviewed the repository directly. The repo currently contains a Flask application, Docker setup, Kubernetes base manifests, a local Kustomize overlay, Argo CD configuration, three GitHub Actions workflows, tests, scripts, and architecture documentation. ([GitHub][1])
-
-The actual CI/CD flow is particularly good for a DevOps portfolio: **Git push → CI tests/manifest validation → Docker build → Trivy scan → GHCR push → Kustomize image-tag update → Argo CD synchronization → Kubernetes deployment**. 
-
-One important thing I noticed: the repository still contains placeholder image/repository values such as `ghcr.io/owner/kubernetes-gitops-deployment` and the Argo CD manifest contains `YOUR_GITHUB_USERNAME/...`. You should replace these before presenting the project as fully configured. 
-
-Here is a **detailed, portfolio-quality `README.md`** based specifically on the current repository:
-
 # 🚀 Kubernetes GitOps Deployment System
 
-> **Automated CI/CD and GitOps deployment pipeline using GitHub Actions, Docker, GitHub Container Registry, Kustomize, Argo CD, and Kubernetes.**
+A complete **CI/CD and GitOps deployment system** that automatically builds, tests, scans, and deploys a containerized application to Kubernetes.
 
-[![CI](https://img.shields.io/github/actions/workflow/status/Gauravb741/gitops-kubernetes-deployer/ci.yml?label=CI\&logo=github)](https://github.com/Gauravb741/gitops-kubernetes-deployer/actions/workflows/ci.yml)
-[![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker\&logoColor=white)](https://www.docker.com/)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestrated-326CE5?logo=kubernetes\&logoColor=white)](https://kubernetes.io/)
-[![Argo CD](https://img.shields.io/badge/Argo%20CD-GitOps-EF7B4D?logo=argo)](https://argo-cd.readthedocs.io/)
-[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-2088FF?logo=githubactions\&logoColor=white)](https://github.com/features/actions)
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python\&logoColor=white)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+The project combines:
+
+* GitHub
+* GitHub Actions
+* Docker
+* GitHub Container Registry
+* Kubernetes
+* Kustomize
+* Argo CD
+* Trivy
+* Pytest
+
+The main objective is to create an automated deployment pipeline where **Git acts as the source of truth for Kubernetes deployments**.
 
 ---
 
 ## 📌 Overview
 
-**Kubernetes GitOps Deployment System** is a complete DevOps project demonstrating how a containerized application can be automatically tested, built, scanned, published, and deployed to Kubernetes using a **GitOps workflow**.
-
-The project uses **Git as the single source of truth** for application deployment configuration.
-
-Instead of manually running:
-
-```bash
-docker build
-docker push
-kubectl apply
-kubectl set image
-```
-
-the deployment process is automated.
-
-A developer only needs to push code to GitHub.
-
-The automated pipeline then:
+The project implements an automated workflow:
 
 ```text
 Developer
     │
     │ git push
     ▼
-┌──────────────────────┐
-│       GitHub         │
-│   Source Repository  │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│    GitHub Actions    │
-│                      │
-│  • Run tests         │
-│  • Lint YAML         │
-│  • Validate K8s      │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│    Docker Build      │
-│                      │
-│  • Build image       │
-│  • Trivy scan        │
-│  • Generate SBOM     │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│        GHCR          │
-│ GitHub Container     │
-│      Registry        │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│  GitOps Configuration│
-│                      │
-│ Update Kustomize     │
-│ image SHA tag        │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│       Argo CD        │
-│                      │
-│ Detect Git change    │
-│ Auto Sync + Self Heal│
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│     Kubernetes       │
-│                      │
-│  Deployment           │
-│  Service              │
-│  ConfigMap             │
-│  Ingress               │
-│  Pods                  │
-└──────────────────────┘
+GitHub Repository
+    │
+    ▼
+GitHub Actions
+    │
+    ├── Run Tests
+    ├── YAML Validation
+    └── Kubernetes Validation
+    │
+    ▼
+Docker Build
+    │
+    ├── Build Image
+    ├── Security Scan
+    └── Generate SBOM
+    │
+    ▼
+GitHub Container Registry
+    │
+    ▼
+GitOps Configuration Update
+    │
+    ▼
+Git Repository
+    │
+    ▼
+Argo CD
+    │
+    ├── Detect Changes
+    ├── Synchronize
+    └── Self-Heal
+    │
+    ▼
+Kubernetes
+    │
+    ├── Deployment
+    ├── Service
+    ├── ConfigMap
+    └── Ingress
 ```
+
+Once the application code is pushed to GitHub, the rest of the deployment process is automated.
 
 ---
 
-# 🎯 Project Goals
+# 🛠️ Technology Stack
 
-The primary goal of this project is to demonstrate a **real-world Kubernetes GitOps deployment workflow** rather than a simple `kubectl apply` deployment.
+| Technology                | Purpose                        |
+| ------------------------- | ------------------------------ |
+| Python 3.12               | Application runtime            |
+| Flask                     | Web application                |
+| Pytest                    | Automated testing              |
+| Docker                    | Containerization               |
+| Docker Compose            | Local development              |
+| GitHub Actions            | CI/CD                          |
+| GitHub Container Registry | Container image storage        |
+| Trivy                     | Container security scanning    |
+| Kubernetes                | Container orchestration        |
+| Kustomize                 | Kubernetes configuration       |
+| Argo CD                   | GitOps deployment              |
+| Kind                      | Local Kubernetes cluster       |
+| NGINX Ingress             | Application routing            |
+| kubeconform               | Kubernetes manifest validation |
+| yamllint                  | YAML validation                |
 
-The project demonstrates:
+---
 
-* Git-based infrastructure management
-* Continuous Integration with GitHub Actions
+# ✨ Features
+
+* Automated CI pipeline
 * Automated Python testing
+* Code coverage
 * YAML linting
 * Kubernetes manifest validation
-* Docker image creation
+* Docker image building
+* Multi-stage Docker build
 * Container vulnerability scanning
+* SBOM generation
 * GitHub Container Registry integration
-* Immutable image tagging using Git SHA
-* Kustomize-based Kubernetes configuration
-* Argo CD continuous delivery
-* Automated synchronization
+* Immutable Git SHA image tags
+* Kubernetes deployments
 * Kubernetes health checks
+* Liveness probes
+* Readiness probes
+* Startup probes
+* Kustomize overlays
+* Argo CD deployment
+* Automatic synchronization
+* Automatic pruning
+* Self-healing
 * Rolling updates
-* Self-healing deployments
-* Container security hardening
+* Non-root containers
+* Kubernetes security contexts
 * Local Kubernetes development
-* Docker Compose based local testing
+* Docker Compose development
 * Automated cleanup
-
----
-
-# 🧰 Technology Stack
-
-| Technology                    | Purpose                             |
-| ----------------------------- | ----------------------------------- |
-| **Python 3.12**               | Application runtime                 |
-| **Flask**                     | Web application framework           |
-| **Pytest**                    | Automated application testing       |
-| **Docker**                    | Application containerization        |
-| **Docker Compose**            | Local container development         |
-| **GitHub Actions**            | CI/CD automation                    |
-| **GitHub Container Registry** | Container image registry            |
-| **Trivy**                     | Container vulnerability scanning    |
-| **Kubernetes**                | Container orchestration             |
-| **Kustomize**                 | Kubernetes configuration management |
-| **Argo CD**                   | GitOps continuous delivery          |
-| **Kind**                      | Local Kubernetes cluster            |
-| **NGINX Ingress**             | Kubernetes ingress routing          |
-| **kubeconform**               | Kubernetes manifest validation      |
-| **yamllint**                  | YAML linting                        |
-
----
-
-# ✨ Key Features
-
-## 1. Automated CI Pipeline
-
-Every push and pull request can trigger the CI workflow.
-
-The CI pipeline performs:
-
-### Python tests
-
-```bash
-pytest tests/ --tb=short --cov=app
-```
-
-### YAML linting
-
-The repository validates Kubernetes manifests and Docker Compose configuration using `yamllint`.
-
-### Kubernetes validation
-
-The project uses `kubeconform` to validate Kubernetes manifests.
-
-### Kustomize validation
-
-The local Kustomize overlay is rendered and validated before deployment.
-
-This prevents invalid configuration from reaching the deployment stage.
-
----
-
-# 🐳 2. Multi-Stage Docker Build
-
-The application uses a multi-stage Dockerfile.
-
-### Builder stage
-
-```dockerfile
-FROM python:3.12-slim AS builder
-```
-
-Dependencies are installed separately.
-
-### Runtime stage
-
-```dockerfile
-FROM python:3.12-slim AS runtime
-```
-
-Only the required runtime files and dependencies are copied into the final image.
-
-The container also:
-
-* Runs as a non-root user
-* Uses Python 3.12
-* Exposes port `8080`
-* Includes a Docker health check
-* Uses Gunicorn
-* Uses multiple workers
-* Enables container-friendly logging
-
-Example runtime command:
-
-```bash
-gunicorn \
-  --bind 0.0.0.0:8080 \
-  --workers 2 \
-  --threads 2 \
-  --timeout 30 \
-  app:app
-```
-
----
-
-# 🔐 3. Container Security
-
-The Docker image does not run the application as root.
-
-A dedicated user is created:
-
-```text
-appuser
-UID: 1001
-GID: 1001
-```
-
-Kubernetes also enforces:
-
-```yaml
-runAsNonRoot: true
-allowPrivilegeEscalation: false
-capabilities:
-  drop:
-    - ALL
-```
-
-This reduces the container's privileges and follows common container security practices.
-
----
-
-# 🔍 4. Trivy Security Scanning
-
-Before the final Docker image is pushed, the workflow scans the image using **Trivy**.
-
-The scan focuses on:
-
-```text
-CRITICAL
-HIGH
-```
-
-severity vulnerabilities.
-
-The results are uploaded to GitHub's security interface in SARIF format.
-
-The workflow also generates:
-
-* Image provenance
-* Software Bill of Materials (SBOM)
-
----
-
-# 📦 5. GitHub Container Registry
-
-Docker images are published to:
-
-```text
-ghcr.io/<github-owner>/<repository>
-```
-
-Images receive tags based on Git references and Git commit SHA.
-
-The SHA-based tag provides an immutable reference to a specific version of the source code.
-
-Example:
-
-```text
-sha-a1b2c3d
-```
-
-This is preferable to relying exclusively on:
-
-```text
-latest
-```
-
-because every deployment can be traced back to a specific Git commit.
-
----
-
-# 🔄 6. GitOps Deployment
-
-The project follows the GitOps principle:
-
-> **Git is the source of truth for the desired Kubernetes state.**
-
-The deployment configuration is stored inside:
-
-```text
-kubernetes/
-```
-
-Argo CD monitors the Git repository.
-
-When the deployment configuration changes:
-
-```text
-Git change
-    ↓
-Argo CD detects change
-    ↓
-Kustomize renders manifests
-    ↓
-Kubernetes resources updated
-```
 
 ---
 
 # 🏗️ Architecture
 
-The complete architecture is:
-
 ```text
-                         ┌────────────────────┐
-                         │     Developer      │
-                         │                    │
-                         │   git push         │
-                         └─────────┬──────────┘
-                                   │
-                                   ▼
-                         ┌────────────────────┐
-                         │      GitHub        │
-                         │   Source Repo      │
-                         └─────────┬──────────┘
-                                   │
-                     ┌─────────────┴─────────────┐
-                     │                           │
-                     ▼                           ▼
-          ┌────────────────────┐      ┌────────────────────┐
-          │    CI Workflow     │      │  Docker Workflow   │
-          │                    │      │                    │
-          │ • Pytest           │      │ • Docker Build     │
-          │ • YAML Lint        │      │ • Trivy Scan       │
-          │ • K8s Validation   │      │ • GHCR Push        │
-          └────────────────────┘      └─────────┬──────────┘
-                                                │
-                                                ▼
-                                      ┌────────────────────┐
-                                      │       GHCR         │
-                                      │ Container Registry │
-                                      └─────────┬──────────┘
-                                                │
-                                                ▼
-                                      ┌────────────────────┐
-                                      │ GitOps Workflow    │
-                                      │                    │
-                                      │ Update Kustomize   │
-                                      │ image SHA tag      │
-                                      └─────────┬──────────┘
-                                                │
-                                                ▼
-                                      ┌────────────────────┐
-                                      │      Git Repo      │
-                                      │ Desired State      │
-                                      └─────────┬──────────┘
-                                                │
-                                                ▼
-                                      ┌────────────────────┐
-                                      │      Argo CD       │
-                                      │                    │
-                                      │ Sync               │
-                                      │ Self-Heal          │
-                                      │ Prune              │
-                                      └─────────┬──────────┘
-                                                │
-                                                ▼
-                                      ┌────────────────────┐
-                                      │    Kubernetes      │
-                                      │      Cluster       │
-                                      └────────────────────┘
+                         ┌─────────────────────┐
+                         │      Developer      │
+                         │                     │
+                         │      git push       │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │       GitHub        │
+                         │   Source Repository │
+                         └──────────┬──────────┘
+                                    │
+                     ┌──────────────┴──────────────┐
+                     │                             │
+                     ▼                             ▼
+          ┌─────────────────────┐       ┌─────────────────────┐
+          │   GitHub Actions    │       │   Docker Pipeline   │
+          │                     │       │                     │
+          │ • Pytest            │       │ • Build             │
+          │ • YAML Lint         │       │ • Trivy Scan        │
+          │ • K8s Validation    │       │ • SBOM              │
+          └─────────────────────┘       └──────────┬──────────┘
+                                                   │
+                                                   ▼
+                                        ┌─────────────────────┐
+                                        │        GHCR         │
+                                        │ Container Registry  │
+                                        └──────────┬──────────┘
+                                                   │
+                                                   ▼
+                                        ┌─────────────────────┐
+                                        │   GitOps Workflow   │
+                                        │                     │
+                                        │ Update image SHA    │
+                                        └──────────┬──────────┘
+                                                   │
+                                                   ▼
+                                        ┌─────────────────────┐
+                                        │    Git Repository   │
+                                        │   Desired State     │
+                                        └──────────┬──────────┘
+                                                   │
+                                                   ▼
+                                        ┌─────────────────────┐
+                                        │       Argo CD       │
+                                        │                     │
+                                        │ • Sync              │
+                                        │ • Self-Heal         │
+                                        │ • Prune             │
+                                        └──────────┬──────────┘
+                                                   │
+                                                   ▼
+                                        ┌─────────────────────┐
+                                        │     Kubernetes      │
+                                        │                     │
+                                        │ Deployment          │
+                                        │ Service             │
+                                        │ ConfigMap           │
+                                        │ Ingress             │
+                                        │ Pods                │
+                                        └─────────────────────┘
 ```
 
 ---
 
-# 📁 Repository Structure
+# 📁 Project Structure
 
 ```text
 gitops-kubernetes-deployer/
@@ -451,142 +246,281 @@ gitops-kubernetes-deployer/
 
 ---
 
-# 🧩 Application
+# 🔄 CI/CD Pipeline
 
-The project contains a Flask application designed specifically to demonstrate Kubernetes and GitOps concepts.
-
-The application exposes several endpoints.
-
-## `/`
-
-Displays the application dashboard.
-
-It provides runtime information such as:
-
-* Application name
-* Version
-* Environment
-* Pod name
-* Pod namespace
-* Hostname
-* Git commit
-* Build date
-* Uptime
-* Request count
-
----
-
-## `/health`
-
-Kubernetes liveness endpoint.
-
-Example response:
-
-```json
-{
-  "status": "healthy",
-  "timestamp": "..."
-}
-```
-
-This endpoint is used by Kubernetes to determine whether the application process is alive.
-
----
-
-## `/ready`
-
-Kubernetes readiness endpoint.
-
-Example:
-
-```json
-{
-  "status": "ready",
-  "timestamp": "..."
-}
-```
-
-During graceful shutdown the application returns:
-
-```http
-503 Service Unavailable
-```
-
-This prevents traffic from being routed to a pod that is shutting down.
-
----
-
-## `/version`
-
-Returns structured application and build information.
-
-Example:
-
-```json
-{
-  "application": "kubernetes-gitops-demo",
-  "version": "1.0.0",
-  "environment": "production",
-  "pod_name": "...",
-  "pod_namespace": "gitops-demo",
-  "hostname": "...",
-  "git_commit": "...",
-  "build_date": "...",
-  "uptime_seconds": 123
-}
-```
-
----
-
-## `/metrics`
-
-Provides lightweight Prometheus-compatible metrics.
-
-Currently exposed metrics include:
+The project uses three GitHub Actions workflows:
 
 ```text
-app_uptime_seconds
-app_http_requests_total
+.github/workflows/
+
+├── ci.yml
+├── docker.yml
+└── gitops.yml
 ```
 
-This provides a foundation for integrating the application with a monitoring stack.
+---
+
+## 1. CI Workflow
+
+The CI workflow validates the application before it is deployed.
+
+```text
+Git Push / Pull Request
+          │
+          ▼
+     Run Pytest
+          │
+          ▼
+     Generate Coverage
+          │
+          ▼
+      YAML Lint
+          │
+          ▼
+ Kubernetes Validation
+          │
+          ▼
+     Kustomize Build
+```
+
+### Python Tests
+
+```bash
+pytest tests/ --tb=short --cov=app
+```
+
+The workflow also generates a coverage report.
 
 ---
 
-## `/info`
+## YAML Validation
 
-Provides detailed application and runtime information including:
+The repository uses `yamllint` to validate configuration files.
 
-* Application configuration
-* Python version
-* Hostname
-* Pod metadata
-* Uptime
-* Request statistics
+The validation covers:
+
+```text
+kubernetes/
+argocd/
+docker-compose.yml
+```
 
 ---
 
-# ☸️ Kubernetes Configuration
+## Kubernetes Validation
 
-The Kubernetes configuration uses a **base + overlay** structure.
+Kubernetes manifests are validated using `kubeconform`.
+
+The local Kustomize overlay is rendered before validation:
+
+```bash
+kustomize build kubernetes/overlays/local
+```
+
+This helps detect invalid Kubernetes configuration before deployment.
+
+---
+
+# 🐳 Docker
+
+The application is containerized using a multi-stage Docker build.
+
+The Docker image uses:
+
+```text
+Python 3.12 Slim
+```
+
+The runtime container:
+
+* Uses a non-root user
+* Exposes port `8080`
+* Includes a health check
+* Uses Gunicorn
+* Uses multiple workers
+* Uses a minimal runtime image
+
+Example application command:
+
+```bash
+gunicorn \
+  --bind 0.0.0.0:8080 \
+  --workers 2 \
+  --threads 2 \
+  --timeout 30 \
+  app:app
+```
+
+---
+
+# 🔐 Container Security
+
+The container does not run as root.
+
+The application uses a dedicated user:
+
+```text
+appuser
+UID: 1001
+GID: 1001
+```
+
+Kubernetes additionally applies:
+
+```yaml
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+```
+
+Linux capabilities are also dropped:
+
+```yaml
+capabilities:
+  drop:
+    - ALL
+```
+
+---
+
+# 🔍 Trivy Security Scanning
+
+The Docker pipeline uses Trivy to scan the container image for vulnerabilities.
+
+The pipeline checks:
+
+```text
+HIGH
+CRITICAL
+```
+
+severity vulnerabilities.
+
+Security results are uploaded to GitHub's security interface.
+
+The pipeline also generates an SBOM for the image.
+
+---
+
+# 📦 GitHub Container Registry
+
+Built Docker images are pushed to:
+
+```text
+ghcr.io/<github-owner>/<repository>
+```
+
+Images are tagged using Git information.
+
+The most important tag is the Git SHA:
+
+```text
+sha-<commit>
+```
+
+For example:
+
+```text
+sha-a1b2c3d
+```
+
+This makes every deployed container traceable to a specific Git commit.
+
+---
+
+# 🔄 GitOps Workflow
+
+After the Docker image is successfully built and pushed, the GitOps workflow updates the Kubernetes configuration.
+
+The image reference is updated in:
+
+```text
+kubernetes/overlays/local/kustomization.yaml
+```
+
+The workflow uses Kustomize:
+
+```bash
+kustomize edit set image
+```
+
+The updated configuration is committed back to Git.
+
+Example commit:
+
+```text
+gitops: update image tag to sha-a1b2c3d
+```
+
+This Git change is then detected by Argo CD.
+
+---
+
+# 🔱 Argo CD
+
+Argo CD continuously monitors the Git repository.
+
+The basic flow is:
+
+```text
+Git Repository
+      │
+      ▼
+   Argo CD
+      │
+      ▼
+  Kustomize
+      │
+      ▼
+ Kubernetes
+```
+
+Argo CD is responsible for keeping the Kubernetes cluster synchronized with the desired state stored in Git.
+
+---
+
+# 🔄 Self-Healing
+
+The Argo CD configuration enables:
+
+```yaml
+automated:
+  prune: true
+  selfHeal: true
+```
+
+### Self-Heal
+
+If a Kubernetes resource is manually modified, Argo CD can detect the difference between:
+
+```text
+Git State
+   vs
+Cluster State
+```
+
+and restore the cluster to the state defined in Git.
+
+### Pruning
+
+Resources removed from the Git configuration can also be removed from the Kubernetes cluster.
+
+---
+
+# ☸️ Kubernetes
+
+The Kubernetes configuration follows a **Base + Overlay** structure.
 
 ```text
 kubernetes/
 │
 ├── base/
-│   ├── namespace.yaml
-│   ├── configmap.yaml
-│   ├── deployment.yaml
-│   ├── service.yaml
-│   ├── ingress.yaml
-│   └── kustomization.yaml
 │
 └── overlays/
     └── local/
-        └── kustomization.yaml
 ```
 
-This makes it possible to reuse the base configuration while applying environment-specific changes.
+This allows common Kubernetes configuration to be stored in the base while environment-specific configuration is maintained in overlays.
 
 ---
 
@@ -594,8 +528,8 @@ This makes it possible to reuse the base configuration while applying environmen
 
 The application runs with:
 
-```yaml
-replicas: 2
+```text
+Replicas: 2
 ```
 
 The deployment uses:
@@ -611,13 +545,13 @@ maxSurge: 1
 maxUnavailable: 0
 ```
 
-This allows updates to occur without intentionally dropping below the desired number of available replicas.
+This allows new pods to be created before old pods are removed.
 
 ---
 
-# ❤️ Kubernetes Health Probes
+# ❤️ Health Probes
 
-Three different probes are configured.
+The application provides three Kubernetes probes.
 
 ## Startup Probe
 
@@ -625,7 +559,7 @@ Three different probes are configured.
 /health
 ```
 
-Allows the application time to initialize.
+Used during application startup.
 
 ## Liveness Probe
 
@@ -633,7 +567,7 @@ Allows the application time to initialize.
 /health
 ```
 
-If the application becomes unhealthy, Kubernetes can restart the container.
+Used to determine whether the application is still running correctly.
 
 ## Readiness Probe
 
@@ -641,23 +575,23 @@ If the application becomes unhealthy, Kubernetes can restart the container.
 /ready
 ```
 
-Determines whether the pod should receive traffic.
+Used to determine whether the pod should receive traffic.
 
-This separation between liveness and readiness is an important Kubernetes production pattern.
+If the application is shutting down, the readiness endpoint can return:
+
+```text
+503 Service Unavailable
+```
+
+which prevents traffic from being sent to the terminating pod.
 
 ---
 
 # 🌐 Kubernetes Service
 
-The application is exposed internally using a:
+The application uses a Kubernetes `ClusterIP` service in the base configuration.
 
-```text
-ClusterIP
-```
-
-service.
-
-The service listens on:
+The service exposes:
 
 ```text
 Port: 80
@@ -685,366 +619,119 @@ using:
 
 # 🌍 Ingress
 
-The base configuration includes an NGINX Ingress.
+The Kubernetes configuration includes an NGINX Ingress.
 
-The configured hostname is:
+The configured host is:
 
 ```text
 gitops-demo.local
 ```
 
-Requests to:
-
-```text
-/
-```
-
-are routed to:
-
-```text
-gitops-demo
-```
-
-service.
+Traffic is routed to the application service.
 
 ---
 
-# 🎨 Kustomize
+# 🧩 Application Endpoints
 
-Kustomize is used to manage Kubernetes configuration without duplicating entire manifests.
+The Flask application provides several endpoints.
 
-The local overlay references:
+## `/`
 
-```yaml
-resources:
-  - ../../base
-```
+Main application dashboard.
 
-and applies environment-specific patches.
-
-For example, the local overlay:
-
-* Keeps two replicas
-* Changes the service to NodePort
-* Assigns NodePort `30080`
-* Changes `APP_ENV` to `local-kubernetes`
-* Controls the container image tag
+Displays application and runtime information.
 
 ---
 
-# 🔁 GitHub Actions Pipeline
+## `/health`
 
-The project contains three GitHub Actions workflows.
+Health endpoint.
 
-```text
-.github/workflows/
+Example:
 
-├── ci.yml
-├── docker.yml
-└── gitops.yml
+```json
+{
+  "status": "healthy"
+}
 ```
 
 ---
 
-# 1️⃣ CI — Test & Validate
+## `/ready`
 
-File:
+Readiness endpoint.
 
-```text
-.github/workflows/ci.yml
-```
+Example:
 
-Triggered on:
-
-```text
-push
-pull_request
-```
-
-The workflow performs three major jobs.
-
-### Python Tests
-
-```text
-Python 3.12
-      ↓
-Install dependencies
-      ↓
-Pytest
-      ↓
-Coverage report
-```
-
-Coverage is exported as:
-
-```text
-coverage.xml
-```
-
-and uploaded as a GitHub Actions artifact.
-
-### YAML Lint
-
-Validates:
-
-```text
-kubernetes/
-argocd/
-docker-compose.yml
-```
-
-using `yamllint`.
-
-### Kubernetes Validation
-
-Uses:
-
-```text
-kubeconform
-```
-
-to validate Kubernetes manifests.
-
-The local Kustomize overlay is also rendered:
-
-```bash
-kustomize build kubernetes/overlays/local
-```
-
-and passed into kubeconform.
-
----
-
-# 2️⃣ Docker — Build & Push
-
-File:
-
-```text
-.github/workflows/docker.yml
-```
-
-Triggered when code is pushed to:
-
-```text
-main
-master
-```
-
-and can also be manually triggered.
-
-Pipeline:
-
-```text
-Checkout
-   ↓
-Docker Buildx
-   ↓
-Login to GHCR
-   ↓
-Generate tags
-   ↓
-Build image
-   ↓
-Trivy security scan
-   ↓
-Upload SARIF
-   ↓
-Build final image
-   ↓
-Push to GHCR
-   ↓
-Generate provenance + SBOM
+```json
+{
+  "status": "ready"
+}
 ```
 
 ---
 
-# 3️⃣ GitOps — Update Deployment
+## `/version`
 
-File:
+Returns application and build information.
 
-```text
-.github/workflows/gitops.yml
-```
+Example:
 
-This workflow runs after the Docker workflow completes successfully.
-
-It calculates the Git commit SHA and creates an immutable image tag:
-
-```text
-sha-<commit>
-```
-
-It then updates:
-
-```text
-kubernetes/overlays/local/kustomization.yaml
-```
-
-using:
-
-```bash
-kustomize edit set image
-```
-
-The workflow commits the updated configuration:
-
-```text
-gitops: update image tag to sha-xxxxxxx
-```
-
-and pushes the change back to GitHub.
-
-That Git change becomes the trigger for the GitOps deployment.
-
----
-
-# 🔄 Complete Deployment Flow
-
-The complete automated flow is:
-
-```text
-1. Developer modifies application
-            │
-            ▼
-2. git push
-            │
-            ▼
-3. GitHub Actions CI
-            │
-            ├── Pytest
-            ├── Coverage
-            ├── YAML lint
-            └── Kubernetes validation
-            │
-            ▼
-4. Docker workflow
-            │
-            ├── Build image
-            ├── Trivy scan
-            ├── SBOM
-            └── Push to GHCR
-            │
-            ▼
-5. GitOps workflow
-            │
-            └── Update Kustomize image SHA
-            │
-            ▼
-6. Git commit
-            │
-            ▼
-7. Argo CD detects Git change
-            │
-            ▼
-8. Kustomize renders manifests
-            │
-            ▼
-9. Kubernetes receives desired state
-            │
-            ▼
-10. RollingUpdate
-            │
-            ▼
-11. New pods start
-            │
-            ▼
-12. Startup probe passes
-            │
-            ▼
-13. Readiness probe passes
-            │
-            ▼
-14. Traffic routed to new pods
-            │
-            ▼
-15. Old pods terminated
+```json
+{
+  "application": "kubernetes-gitops-demo",
+  "version": "1.0.0",
+  "environment": "production",
+  "pod_name": "...",
+  "pod_namespace": "...",
+  "git_commit": "...",
+  "build_date": "..."
+}
 ```
 
 ---
 
-# 🧭 Argo CD
+## `/metrics`
 
-Argo CD acts as the **Continuous Delivery / GitOps controller**.
-
-The Argo CD application is defined in:
+Provides basic metrics such as:
 
 ```text
-argocd/application.yaml
+app_uptime_seconds
+app_http_requests_total
 ```
-
-The application watches:
-
-```text
-kubernetes/overlays/local
-```
-
-and deploys it to:
-
-```text
-gitops-demo
-```
-
-namespace.
 
 ---
 
-# 🔄 Argo CD Self-Healing
+## `/info`
 
-The Argo CD configuration enables:
-
-```yaml
-automated:
-  prune: true
-  selfHeal: true
-```
-
-### Prune
-
-Resources removed from Git can be removed from the Kubernetes cluster.
-
-### Self-Heal
-
-If somebody manually changes a Kubernetes resource:
-
-```text
-Git desired state
-       │
-       │ differs
-       ▼
-Kubernetes actual state
-```
-
-Argo CD can detect the drift and reconcile the cluster back to the state defined in Git.
-
-This is one of the major benefits of the GitOps model.
+Provides runtime and application information.
 
 ---
 
-# 🧪 Local Development
+# 💻 Local Development
 
-## Prerequisites
+## Requirements
 
 Install:
 
 * Git
+* Python 3.12
 * Docker
 * Docker Compose
-* Python 3.12
 * kubectl
 * Kind
 * Kustomize
+
+For the complete GitOps workflow, also install:
+
 * Argo CD
-
-Optional:
-
-* NGINX Ingress Controller
 * Trivy
 * kubeconform
 * yamllint
 
 ---
 
-# 🐍 Run Application Locally
+# 🐍 Run With Python
 
 Clone the repository:
 
@@ -1052,7 +739,7 @@ Clone the repository:
 git clone https://github.com/Gauravb741/gitops-kubernetes-deployer.git
 ```
 
-Enter the directory:
+Enter the project:
 
 ```bash
 cd gitops-kubernetes-deployer
@@ -1082,13 +769,13 @@ Install dependencies:
 pip install -r app/requirements.txt
 ```
 
-Run the application:
+Run:
 
 ```bash
 python app/app.py
 ```
 
-The application listens on:
+Application:
 
 ```text
 http://localhost:8080
@@ -1098,33 +785,19 @@ http://localhost:8080
 
 # 🐳 Run With Docker Compose
 
-The repository includes a Docker Compose configuration for local development.
-
-Run:
+Build and start:
 
 ```bash
 docker compose up --build
 ```
 
-The application becomes available at:
-
-```text
-http://localhost:8080
-```
-
-Stop the application:
-
-```bash
-docker compose down
-```
-
-Run in detached mode:
+Run in background:
 
 ```bash
 docker compose up --build -d
 ```
 
-Check running containers:
+Check containers:
 
 ```bash
 docker compose ps
@@ -1136,17 +809,29 @@ View logs:
 docker compose logs -f
 ```
 
+Stop:
+
+```bash
+docker compose down
+```
+
+Application:
+
+```text
+http://localhost:8080
+```
+
 ---
 
 # ☸️ Run With Kubernetes
 
-Create a local Kind cluster:
+Create a Kind cluster:
 
 ```bash
 kind create cluster --name gitops-demo
 ```
 
-Verify:
+Check the cluster:
 
 ```bash
 kubectl cluster-info
@@ -1160,30 +845,24 @@ kubectl get nodes
 
 ---
 
-# 🔧 Build Kubernetes Configuration
+# 🔧 Validate Kustomize
 
-Render the Kustomize overlay:
+Render the Kubernetes configuration:
 
 ```bash
 kustomize build kubernetes/overlays/local
 ```
 
-You can inspect the generated Kubernetes resources before applying them.
+This allows you to inspect the final Kubernetes manifests before deploying them.
 
 ---
 
-# 🚀 Deploy Manually
+# 🚀 Deploy to Kubernetes
 
-Apply the local overlay:
+Apply the configuration:
 
 ```bash
 kubectl apply -k kubernetes/overlays/local
-```
-
-Check namespace:
-
-```bash
-kubectl get namespaces
 ```
 
 Check deployments:
@@ -1214,21 +893,7 @@ kubectl get ingress -n gitops-demo
 
 # 🌐 Access the Application
 
-The local overlay exposes the application using NodePort:
-
-```text
-30080
-```
-
-You can inspect the service:
-
-```bash
-kubectl get svc -n gitops-demo
-```
-
-Depending on the Kind networking configuration, you can access the application using the appropriate local port-forward or Kind networking method.
-
-A simple approach is:
+A simple way to access the application locally is port forwarding:
 
 ```bash
 kubectl port-forward svc/gitops-demo 8080:80 -n gitops-demo
@@ -1240,119 +905,7 @@ Then open:
 http://localhost:8080
 ```
 
----
-
-# 🔱 Install Argo CD
-
-Create the Argo CD namespace:
-
-```bash
-kubectl create namespace argocd
-```
-
-Install Argo CD using the official installation method.
-
-After installation, verify:
-
-```bash
-kubectl get pods -n argocd
-```
-
-Wait until the Argo CD components are ready.
-
----
-
-# ⚙️ Configure Argo CD
-
-Before applying:
-
-```text
-argocd/application.yaml
-```
-
-make sure the repository URL points to the actual repository.
-
-The configuration should reference:
-
-```text
-https://github.com/Gauravb741/gitops-kubernetes-deployer.git
-```
-
-The application should point to:
-
-```text
-kubernetes/overlays/local
-```
-
-Then apply:
-
-```bash
-kubectl apply -f argocd/application.yaml -n argocd
-```
-
-Check the application:
-
-```bash
-kubectl get applications -n argocd
-```
-
----
-
-# 🔍 Verify GitOps Synchronization
-
-After Argo CD is configured:
-
-```bash
-kubectl get application gitops-demo -n argocd
-```
-
-You should eventually see the application become synchronized and healthy.
-
-The expected GitOps flow is:
-
-```text
-Git Repository
-      ↓
-Argo CD
-      ↓
-Kustomize
-      ↓
-Kubernetes
-      ↓
-Deployment
-      ↓
-Pods
-```
-
----
-
-# 🩺 Application Health Checks
-
-Check pod status:
-
-```bash
-kubectl get pods -n gitops-demo
-```
-
-Check pod details:
-
-```bash
-kubectl describe pod <pod-name> -n gitops-demo
-```
-
-Check application logs:
-
-```bash
-kubectl logs -n gitops-demo deployment/gitops-demo
-```
-
-Test health:
-
-```bash
-kubectl port-forward svc/gitops-demo 8080:80 -n gitops-demo
-```
-
-Then:
+Test the health endpoint:
 
 ```bash
 curl http://localhost:8080/health
@@ -1378,20 +931,211 @@ curl http://localhost:8080/metrics
 
 ---
 
+# 🔱 Configure Argo CD
+
+Create the Argo CD namespace:
+
+```bash
+kubectl create namespace argocd
+```
+
+Install Argo CD using its standard installation method.
+
+Verify:
+
+```bash
+kubectl get pods -n argocd
+```
+
+Before applying the Argo CD application configuration, make sure:
+
+```text
+argocd/application.yaml
+```
+
+points to the correct Git repository.
+
+Then apply:
+
+```bash
+kubectl apply -f argocd/application.yaml -n argocd
+```
+
+Check the application:
+
+```bash
+kubectl get applications -n argocd
+```
+
+---
+
+# 🔄 Complete GitOps Flow
+
+The complete deployment process is:
+
+```text
+1. Developer changes code
+          │
+          ▼
+2. git push
+          │
+          ▼
+3. GitHub Actions
+          │
+          ├── Run tests
+          ├── Validate YAML
+          └── Validate Kubernetes
+          │
+          ▼
+4. Docker image build
+          │
+          ▼
+5. Trivy security scan
+          │
+          ▼
+6. Push image to GHCR
+          │
+          ▼
+7. GitOps workflow updates image SHA
+          │
+          ▼
+8. Git change committed
+          │
+          ▼
+9. Argo CD detects change
+          │
+          ▼
+10. Kustomize generates manifests
+          │
+          ▼
+11. Kubernetes deployment updated
+          │
+          ▼
+12. New pods start
+          │
+          ▼
+13. Health checks pass
+          │
+          ▼
+14. Traffic moves to new pods
+          │
+          ▼
+15. Old pods are removed
+```
+
+---
+
+# 🧪 Testing
+
+Run tests:
+
+```bash
+pytest tests/ -v
+```
+
+Run with coverage:
+
+```bash
+pytest tests/ \
+  --cov=app \
+  --cov-report=term-missing
+```
+
+---
+
+# 🔍 Useful Kubernetes Commands
+
+### View pods
+
+```bash
+kubectl get pods -n gitops-demo
+```
+
+### View deployments
+
+```bash
+kubectl get deployments -n gitops-demo
+```
+
+### View services
+
+```bash
+kubectl get svc -n gitops-demo
+```
+
+### View pod logs
+
+```bash
+kubectl logs -n gitops-demo deployment/gitops-demo
+```
+
+### Describe deployment
+
+```bash
+kubectl describe deployment gitops-demo -n gitops-demo
+```
+
+### Describe pod
+
+```bash
+kubectl describe pod <pod-name> -n gitops-demo
+```
+
+### View events
+
+```bash
+kubectl get events -n gitops-demo
+```
+
+### Watch pods
+
+```bash
+kubectl get pods -n gitops-demo -w
+```
+
+---
+
+# 🔙 Rollback
+
+Because the Docker images use Git SHA tags, deployments can be rolled back to a previous image version.
+
+Example:
+
+```text
+Current:
+
+sha-a1b2c3d
+
+Previous:
+
+sha-91f4e2a
+```
+
+Update the Kustomize image tag to the required SHA and commit the change.
+
+Argo CD will detect the Git change and synchronize Kubernetes.
+
+```text
+Git
+ ↓
+Argo CD
+ ↓
+Kustomize
+ ↓
+Kubernetes
+ ↓
+Previous Version
+```
+
+---
+
 # 🧹 Cleanup
 
-The repository includes:
+The project contains:
 
 ```text
 scripts/cleanup.sh
 ```
-
-The script removes:
-
-* Application namespace
-* Argo CD application
-
-The Kind cluster is preserved by default.
 
 Run:
 
@@ -1421,674 +1165,147 @@ The repository contains:
 kubernetes/base/secret-example.yaml
 ```
 
-but the example secret is intentionally excluded from the default Kustomize deployment.
+This file is only an example and should not contain real credentials.
 
-For production environments, secrets should be managed using an appropriate secret-management solution rather than committing sensitive credentials directly to Git.
-
-Possible production approaches include:
-
-* External Secrets Operator
-* Sealed Secrets
-* HashiCorp Vault
-* Cloud provider secret managers
-* SOPS
+For actual deployments, secrets should be managed separately using an appropriate secret-management solution.
 
 ---
 
-# 🧪 Testing
+# 📊 Monitoring Foundation
 
-Run the complete test suite:
+The application includes basic observability endpoints.
 
-```bash
-pytest tests/ -v
-```
-
-Run with coverage:
-
-```bash
-pytest tests/ \
-  --cov=app \
-  --cov-report=term-missing
-```
-
-The same testing process is automatically executed by GitHub Actions.
-
----
-
-# 🛡️ Security Practices
-
-This project implements several security-conscious practices.
-
-### Container
+### Health
 
 ```text
-✓ Non-root user
-✓ Minimal Python slim image
-✓ Multi-stage build
-✓ Docker health check
-✓ No unnecessary Linux capabilities
+/health
 ```
 
-### Kubernetes
+### Readiness
 
 ```text
-✓ runAsNonRoot
-✓ Non-root UID
-✓ Non-root GID
-✓ RuntimeDefault seccomp profile
-✓ allowPrivilegeEscalation disabled
-✓ Linux capabilities dropped
-✓ Resource requests
-✓ Resource limits
+/ready
 ```
 
-### CI/CD
-
-```text
-✓ Trivy vulnerability scanning
-✓ SARIF security reports
-✓ Immutable SHA image tags
-✓ SBOM generation
-✓ GitHub Actions permissions
-```
-
----
-
-# 📊 Observability
-
-The application provides basic observability features.
-
-## Structured Logging
-
-Application logs are emitted in JSON-compatible structured format.
-
-Example:
-
-```json
-{
-  "timestamp": "...",
-  "level": "INFO",
-  "logger": "gitops-demo",
-  "message": "HTTP request processed"
-}
-```
-
-This format is suitable for log aggregation systems.
-
----
-
-# 📈 Metrics
-
-The application provides:
+### Metrics
 
 ```text
 /metrics
 ```
 
-with metrics such as:
+### Application information
 
 ```text
-app_uptime_seconds
-app_http_requests_total
+/info
 ```
 
-These can be consumed by monitoring systems such as Prometheus.
+### Version information
+
+```text
+/version
+```
+
+These endpoints provide a foundation for integrating monitoring tools such as Prometheus and Grafana.
 
 ---
 
-# 🏷️ Image Versioning Strategy
+# 🔮 Possible Extensions
 
-The deployment pipeline uses Git commit SHA based image tags.
-
-Example:
+The project can be extended with:
 
 ```text
-sha-7f83a1b
-```
-
-This provides:
-
-### Traceability
-
-Every deployed image can be mapped to a Git commit.
-
-### Reproducibility
-
-A specific image version can be deployed again.
-
-### Safer rollbacks
-
-Instead of guessing which `latest` image was deployed, the exact image tag can be selected.
-
----
-
-# 🔙 Rollback Strategy
-
-Because deployments use immutable SHA-based image tags, rollback can be performed by changing the Kustomize image tag back to a previously known-good SHA.
-
-Example:
-
-```text
-Current:
-
-sha-a1b2c3d
-
-Rollback:
-
-sha-91f4e2a
-```
-
-After committing the configuration change:
-
-```text
-Git
- ↓
-Argo CD
- ↓
-Kustomize
- ↓
-Kubernetes
-```
-
-The previous application version is restored.
-
----
-
-# 🔄 GitOps vs Traditional Deployment
-
-## Traditional Kubernetes Deployment
-
-```text
-Developer
-   ↓
-Build Image
-   ↓
-Push Image
-   ↓
-kubectl apply
-   ↓
-Kubernetes
-```
-
-This approach requires manual deployment operations.
-
----
-
-## GitOps Deployment
-
-```text
-Developer
-   ↓
-Git Push
-   ↓
-GitHub Actions
-   ↓
-Build + Scan + Push
-   ↓
-Update Git Configuration
-   ↓
-Argo CD
-   ↓
-Kubernetes
-```
-
-The cluster continuously reconciles itself against the desired state stored in Git.
-
----
-
-# 💡 Why This Project Matters
-
-This project demonstrates several concepts commonly used in modern DevOps and Platform Engineering environments.
-
-Instead of demonstrating Kubernetes in isolation, it connects multiple tools into one complete workflow:
-
-```text
-Linux
-  ↓
-Git
-  ↓
-GitHub
-  ↓
-GitHub Actions
-  ↓
-Docker
-  ↓
-Container Registry
-  ↓
-Kubernetes
-  ↓
-Kustomize
-  ↓
-Argo CD
-  ↓
-GitOps
-```
-
-It therefore serves as a practical demonstration of:
-
-* CI/CD
-* Containerization
-* Infrastructure configuration
-* Kubernetes orchestration
-* GitOps
-* Continuous Delivery
-* Security scanning
-* Configuration management
-* Deployment automation
-* Observability
-* DevOps automation
-
----
-
-# 🧑‍💻 Skills Demonstrated
-
-A developer working with this project can demonstrate knowledge of:
-
-### Linux
-
-```text
-Shell scripting
-Process management
-CLI tooling
-Environment variables
-```
-
-### Git & GitHub
-
-```text
-Branches
-Commits
-Pull requests
-Repository workflows
-GitHub Actions
-```
-
-### CI/CD
-
-```text
-Automated testing
-Build pipelines
-Artifact generation
-Deployment automation
-Workflow dependencies
-```
-
-### Docker
-
-```text
-Dockerfiles
-Multi-stage builds
-Container security
-Docker Compose
-Health checks
-Image tagging
-```
-
-### Kubernetes
-
-```text
-Pods
-Deployments
-Services
-ConfigMaps
-Ingress
-Namespaces
-Probes
-Resource limits
-Security contexts
-Rolling updates
-```
-
-### Kustomize
-
-```text
-Bases
-Overlays
-Patches
-Image replacement
-Environment-specific configuration
-```
-
-### GitOps
-
-```text
-Declarative deployment
-Desired state
-Continuous reconciliation
-Self-healing
-Automated synchronization
-Configuration as code
-```
-
-### Argo CD
-
-```text
-Applications
-Automated sync
-Pruning
-Self-healing
-Git-based deployment
+Prometheus
+Grafana
+Alertmanager
+Horizontal Pod Autoscaler
+NetworkPolicies
+PodDisruptionBudgets
+External Secrets
+TLS
+cert-manager
+Argo Rollouts
+Canary Deployments
+Blue-Green Deployments
+Cosign Image Signing
+Kyverno
+OPA Gatekeeper
+Terraform
+AWS EKS
 ```
 
 ---
 
-# 🗺️ Future Improvements
+# 🎯 Core Concept
 
-Possible extensions include:
+The main concept behind the project is:
 
-* Prometheus monitoring
-* Grafana dashboards
-* Alertmanager integration
-* Horizontal Pod Autoscaler
-* NetworkPolicies
-* PodDisruptionBudgets
-* External Secrets Operator
-* TLS with cert-manager
-* Multiple environments
-* Development / staging / production overlays
-* Blue-green deployments
-* Canary deployments
-* Argo Rollouts
-* Image signing
-* Cosign
-* Policy enforcement
-* OPA Gatekeeper
-* Kyverno
-* SAST integration
-* Dependency scanning
-* GitHub Dependabot
-* Kubernetes dashboard
-* Cloud deployment to AWS EKS
-* Infrastructure provisioning using Terraform
+```text
+                 Git
+                  │
+                  │ Desired State
+                  ▼
+               Argo CD
+                  │
+                  │ Reconciliation
+                  ▼
+             Kubernetes
+                  │
+                  │ Actual State
+                  └───────────────┐
+                                  │
+                                  ▼
+                           Continuous Sync
+```
+
+Instead of manually deploying applications with `kubectl`, the desired Kubernetes configuration is stored in Git and Argo CD continuously keeps the Kubernetes cluster synchronized with that configuration.
 
 ---
 
-# 🌎 Multi-Environment Extension
-
-The current repository uses:
+# 🚀 End-to-End Summary
 
 ```text
-kubernetes/base
-kubernetes/overlays/local
+┌────────────────────────────────────────────────────────┐
+│                 GITOPS DEPLOYMENT                      │
+├────────────────────────────────────────────────────────┤
+│                                                        │
+│  GitHub                                                │
+│     │                                                  │
+│     ▼                                                  │
+│  GitHub Actions                                        │
+│     │                                                  │
+│     ├── Tests                                          │
+│     ├── Validation                                     │
+│     └── Security Scan                                  │
+│     │                                                  │
+│     ▼                                                  │
+│  Docker                                                │
+│     │                                                  │
+│     ▼                                                  │
+│  GHCR                                                  │
+│     │                                                  │
+│     ▼                                                  │
+│  Kustomize                                             │
+│     │                                                  │
+│     ▼                                                  │
+│  Git Configuration                                     │
+│     │                                                  │
+│     ▼                                                  │
+│  Argo CD                                               │
+│     │                                                  │
+│     ├── Synchronization                                │
+│     ├── Self-Healing                                   │
+│     └── Pruning                                        │
+│     │                                                  │
+│     ▼                                                  │
+│  Kubernetes                                            │
+│     │                                                  │
+│     ├── Deployment                                     │
+│     ├── Service                                        │
+│     ├── ConfigMap                                      │
+│     ├── Ingress                                        │
+│     └── Pods                                           │
+│                                                        │
+└────────────────────────────────────────────────────────┘
 ```
 
-This structure can naturally be expanded to:
-
-```text
-kubernetes/
-│
-├── base/
-│
-└── overlays/
-    ├── local/
-    ├── development/
-    ├── staging/
-    └── production/
-```
-
-Each environment can maintain its own:
-
-* Replica count
-* Image tag
-* Resource limits
-* Environment variables
-* Ingress hostname
-* Service configuration
-* Scaling configuration
-
-while sharing the same Kubernetes base.
-
----
-
-# 🏆 Portfolio Value
-
-This project is suitable for demonstrating practical DevOps skills because it goes beyond simply deploying a Docker container.
-
-It demonstrates an end-to-end engineering workflow:
-
-```text
-SOURCE CODE
-    ↓
-VERSION CONTROL
-    ↓
-CONTINUOUS INTEGRATION
-    ↓
-AUTOMATED TESTING
-    ↓
-CONTAINER BUILD
-    ↓
-SECURITY SCANNING
-    ↓
-CONTAINER REGISTRY
-    ↓
-GITOPS CONFIGURATION
-    ↓
-CONTINUOUS DELIVERY
-    ↓
-KUBERNETES
-    ↓
-HEALTH CHECKS
-    ↓
-SELF-HEALING
-```
-
----
-
-# 📚 Learning Outcomes
-
-After working with this project, you should understand:
-
-1. How Docker images are built and published.
-2. How GitHub Actions automates CI/CD.
-3. How container vulnerability scanning works.
-4. How Git SHA tags provide immutable image versions.
-5. How Kubernetes Deployments perform rolling updates.
-6. Why liveness and readiness probes are different.
-7. How Kustomize manages Kubernetes configurations.
-8. How Argo CD implements GitOps.
-9. How Git becomes the source of truth for deployments.
-10. How Kubernetes automatically maintains desired state.
-11. How configuration drift can be detected and corrected.
-12. How security can be integrated into a CI/CD pipeline.
-
----
-
-# 🧾 Project Status
-
-| Component                   | Status      |
-| --------------------------- | ----------- |
-| Flask application           | ✅           |
-| Docker containerization     | ✅           |
-| Docker Compose              | ✅           |
-| Python tests                | ✅           |
-| GitHub Actions CI           | ✅           |
-| YAML validation             | ✅           |
-| Kubernetes validation       | ✅           |
-| GHCR integration            | ✅           |
-| Trivy scanning              | ✅           |
-| Kustomize                   | ✅           |
-| Argo CD configuration       | ✅           |
-| Kubernetes deployment       | ✅           |
-| Health probes               | ✅           |
-| GitOps image update         | ✅           |
-| Automated cleanup           | ✅           |
-| Production cloud deployment | 🔧 Optional |
-| Monitoring stack            | 🔧 Optional |
-
----
-
-# ⚠️ Configuration Before Deployment
-
-Before using this repository with your own GitHub account, review the following values:
-
-### Argo CD repository URL
-
-Update:
-
-```text
-argocd/application.yaml
-```
-
-from the placeholder repository URL to your actual repository.
-
-### Container image
-
-Review:
-
-```text
-kubernetes/base/deployment.yaml
-```
-
-and:
-
-```text
-kubernetes/overlays/local/kustomization.yaml
-```
-
-for placeholder image names.
-
-The repository currently contains values such as:
-
-```text
-ghcr.io/owner/kubernetes-gitops-deployment
-```
-
-which should be changed to the actual GitHub Container Registry image for your repository.
-
----
-
-# 🤝 Contributing
-
-Contributions are welcome.
-
-A typical contribution workflow is:
-
-```bash
-git checkout -b feature/my-change
-```
-
-Make your changes, run tests:
-
-```bash
-pytest tests/ -v
-```
-
-Validate Kubernetes configuration:
-
-```bash
-kustomize build kubernetes/overlays/local
-```
-
-Commit:
-
-```bash
-git add .
-git commit -m "feat: add my change"
-```
-
-Push:
-
-```bash
-git push origin feature/my-change
-```
-
-Then create a Pull Request.
-
----
-
-# 📄 License
-
-This project is released under the **MIT License**.
-
-See the `LICENSE` file for details.
-
----
-
-# 👨‍💻 Author
-
-**Gaurav B.**
-
-GitHub:
-
-```text
-https://github.com/Gauravb741
-```
-
-Repository:
-
-```text
-https://github.com/Gauravb741/gitops-kubernetes-deployer
-```
-
----
-
-# ⭐ If You Find This Project Useful
-
-If this project helped you understand GitOps, Kubernetes, Docker, or CI/CD:
-
-* ⭐ Star the repository
-* 🍴 Fork the project
-* 🐛 Open an issue
-* 💡 Suggest improvements
-* 🤝 Contribute
-
----
-
-## 🚀 Quick Summary
-
-```text
-┌─────────────────────────────────────────────────────────────┐
-│              KUBERNETES GITOPS DEPLOYMENT                  │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  GitHub                                                     │
-│     │                                                       │
-│     ▼                                                       │
-│  GitHub Actions                                             │
-│     │                                                       │
-│     ├── Tests                                                │
-│     ├── YAML Validation                                      │
-│     ├── Kubernetes Validation                                │
-│     │                                                       │
-│     ▼                                                       │
-│  Docker                                                     │
-│     │                                                       │
-│     ├── Build                                                │
-│     ├── Trivy Scan                                           │
-│     ├── SBOM                                                 │
-│     │                                                       │
-│     ▼                                                       │
-│  GHCR                                                       │
-│     │                                                       │
-│     ▼                                                       │
-│  Kustomize                                                   │
-│     │                                                       │
-│     ├── Immutable SHA image                                  │
-│     │                                                       │
-│     ▼                                                       │
-│  Git Commit                                                  │
-│     │                                                       │
-│     ▼                                                       │
-│  Argo CD                                                     │
-│     │                                                       │
-│     ├── Auto Sync                                            │
-│     ├── Self Heal                                            │
-│     └── Prune                                                │
-│     │                                                       │
-│     ▼                                                       │
-│  Kubernetes                                                  │
-│     │                                                       │
-│     ├── Deployment                                           │
-│     ├── Service                                              │
-│     ├── ConfigMap                                            │
-│     ├── Ingress                                              │
-│     └── Pods                                                 │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Git → CI → Docker → Security Scan → Registry → GitOps → Argo CD → Kubernetes**
-
-That's the complete deployment lifecycle implemented by this project.
-
-[1]: https://github.com/Gauravb741/gitops-kubernetes-deployer "GitHub - Gauravb741/gitops-kubernetes-deployer · GitHub"
+**Git → GitHub Actions → Docker → Trivy → GHCR → Kustomize → GitOps → Argo CD → Kubernetes**
