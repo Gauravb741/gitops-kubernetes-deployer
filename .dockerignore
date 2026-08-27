@@ -1,0 +1,47 @@
+# Version control
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.tox/
+venv/
+.venv/
+env/
+
+# Tests (not needed in image)
+tests/
+
+# Documentation
+docs/
+
+# Kubernetes & GitOps
+kubernetes/
+argocd/
+
+# Scripts
+scripts/
+
+# CI/CD
+.github/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+docker-compose.yml
+docker-compose*.yml

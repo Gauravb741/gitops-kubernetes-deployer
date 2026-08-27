@@ -1,0 +1,212 @@
+cat > app/templates/index.html << 'HTML_EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="refresh" content="30" />
+  <title>{{ app_name }} — GitOps Demo</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="page">
+
+    <!-- ── Header ──────────────────────────────────────── -->
+    <header class="header">
+      <div class="header-content">
+        <div class="brand">
+          <span class="brand-icon">⎈</span>
+          <div class="brand-text">
+            <span class="brand-title">Kubernetes GitOps Demo</span>
+            <span class="brand-subtitle">Automated Deployment System</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="status-pill">
+            <span class="pulse-dot"></span>
+            <span>Running</span>
+          </div>
+          <div class="version-chip">v{{ version }}</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Main grid ────────────────────────────────────── -->
+    <main class="main-grid">
+
+      <!-- Card 1: Runtime Info -->
+      <section class="card span-2">
+        <div class="card-header">
+          <span class="card-icon">📡</span>
+          <h2>Runtime Information</h2>
+        </div>
+        <div class="info-table">
+          <div class="info-row">
+            <span class="info-key">Application</span>
+            <span class="info-val code">{{ app_name }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Version</span>
+            <span class="info-val"><span class="tag tag-blue">v{{ version }}</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Environment</span>
+            <span class="info-val"><span class="tag tag-amber">{{ environment }}</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Pod Name</span>
+            <span class="info-val code">{{ pod_name }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Namespace</span>
+            <span class="info-val code">{{ pod_namespace }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Hostname</span>
+            <span class="info-val code">{{ hostname }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Git Commit</span>
+            <span class="info-val code">{{ git_commit }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Build Date</span>
+            <span class="info-val code">{{ build_date }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Uptime</span>
+            <span class="info-val"><span class="tag tag-green">{{ uptime }}</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Requests Served</span>
+            <span class="info-val code">{{ request_count }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Server Time</span>
+            <span class="info-val code">{{ timestamp }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 2: Pipeline -->
+      <section class="card span-2">
+        <div class="card-header">
+          <span class="card-icon">🚀</span>
+          <h2>Deployment Pipeline</h2>
+        </div>
+        <div class="pipeline">
+          <div class="pipe-step">
+            <div class="pipe-icon">👨‍💻</div>
+            <div class="pipe-label">Developer</div>
+            <div class="pipe-sub">git push</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step">
+            <div class="pipe-icon">🐙</div>
+            <div class="pipe-label">GitHub</div>
+            <div class="pipe-sub">Repository</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step">
+            <div class="pipe-icon">⚙️</div>
+            <div class="pipe-label">GitHub Actions</div>
+            <div class="pipe-sub">CI / CD</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step">
+            <div class="pipe-icon">🐳</div>
+            <div class="pipe-label">Docker</div>
+            <div class="pipe-sub">GHCR</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step">
+            <div class="pipe-icon">🔄</div>
+            <div class="pipe-label">Argo CD</div>
+            <div class="pipe-sub">GitOps</div>
+          </div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-step active">
+            <div class="pipe-icon">⎈</div>
+            <div class="pipe-label">Kubernetes</div>
+            <div class="pipe-sub">Running ✓</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 3: Endpoints -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-icon">🔌</span>
+          <h2>API Endpoints</h2>
+        </div>
+        <div class="endpoint-list">
+          <a class="endpoint" href="/" target="_blank">
+            <span class="method">GET</span>
+            <span class="path">/</span>
+            <span class="desc">Dashboard UI</span>
+          </a>
+          <a class="endpoint" href="/health" target="_blank">
+            <span class="method">GET</span>
+            <span class="path">/health</span>
+            <span class="desc">Liveness probe</span>
+          </a>
+          <a class="endpoint" href="/ready" target="_blank">
+            <span class="method">GET</span>
+            <span class="path">/ready</span>
+            <span class="desc">Readiness probe</span>
+          </a>
+          <a class="endpoint" href="/version" target="_blank">
+            <span class="method">GET</span>
+            <span class="path">/version</span>
+            <span class="desc">Version info</span>
+          </a>
+          <a class="endpoint" href="/metrics" target="_blank">
+            <span class="method">GET</span>
+            <span class="path">/metrics</span>
+            <span class="desc">Prometheus metrics</span>
+          </a>
+          <a class="endpoint" href="/info" target="_blank">
+            <span class="method">GET</span>
+            <span class="path">/info</span>
+            <span class="desc">Extended info</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Card 4: Features -->
+      <section class="card">
+        <div class="card-header">
+          <span class="card-icon">✨</span>
+          <h2>System Features</h2>
+        </div>
+        <div class="feature-list">
+          <div class="feature"><span class="feat-dot green"></span>GitOps — Git as source of truth</div>
+          <div class="feature"><span class="feat-dot green"></span>Argo CD automated sync</div>
+          <div class="feature"><span class="feat-dot green"></span>Kubernetes self-healing</div>
+          <div class="feature"><span class="feat-dot green"></span>Zero-downtime rolling updates</div>
+          <div class="feature"><span class="feat-dot green"></span>Health probes (liveness + readiness)</div>
+          <div class="feature"><span class="feat-dot green"></span>Immutable SHA image tags</div>
+          <div class="feature"><span class="feat-dot green"></span>Trivy vulnerability scanning</div>
+          <div class="feature"><span class="feat-dot green"></span>Non-root container security</div>
+          <div class="feature"><span class="feat-dot green"></span>Resource limits enforced</div>
+          <div class="feature"><span class="feat-dot green"></span>Prometheus metrics endpoint</div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── Footer ──────────────────────────────────────── -->
+    <footer class="footer">
+      <span>{{ app_name }}</span>
+      <span class="sep">•</span>
+      <span>GitOps with Argo CD</span>
+      <span class="sep">•</span>
+      <span>Kubernetes</span>
+      <span class="sep">•</span>
+      <span>Page refreshes every 30s</span>
+    </footer>
+
+  </div>
+</body>
+</html>
+HTML_EOF

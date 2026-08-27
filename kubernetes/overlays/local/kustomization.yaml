@@ -1,0 +1,45 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: gitops-demo-local
+
+resources:
+  - ../../base
+
+# ── Image tag replacement ──────────────────────────────────────────────────────
+images:
+  - name: ghcr.io/owner/kubernetes-gitops-deployment
+    newTag: latest
+
+# ── Local-specific patches ─────────────────────────────────────────────────────
+patches:
+  # Keep 2 replicas (explicit for clarity in local env)
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+    target:
+      kind: Deployment
+      name: gitops-demo
+
+  # Use NodePort for local access without ingress controller
+  - patch: |-
+      - op: replace
+        path: /spec/type
+        value: NodePort
+      - op: add
+        path: /spec/ports/0/nodePort
+        value: 30080
+    target:
+      kind: Service
+      name: gitops-demo
+
+  # Override APP_ENV in ConfigMap for local identification
+  - patch: |-
+      - op: replace
+        path: /data/APP_ENV
+        value: local-kubernetes
+    target:
+      kind: ConfigMap
+      name: gitops-demo-config

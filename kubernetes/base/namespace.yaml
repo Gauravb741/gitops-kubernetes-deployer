@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gitops-demo
+  labels:
+    name: gitops-demo
+    managed-by: kustomize
+    project: kubernetes-gitops-deployment
