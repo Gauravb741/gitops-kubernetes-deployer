@@ -14,8 +14,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger("gitops-demo")
 
+# ── Resolve paths relative to this file ───────────────────────
+# This ensures templates and static files are found correctly
+# whether the app is run directly, via gunicorn, or via pytest
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
 # ── Application ───────────────────────────────────────────────
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=TEMPLATE_DIR,
+    static_folder=STATIC_DIR,
+)
 
 # ── Runtime configuration ─────────────────────────────────────
 APP_NAME = os.getenv("APP_NAME", "kubernetes-gitops-demo")
