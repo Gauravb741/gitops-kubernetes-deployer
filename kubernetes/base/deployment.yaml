@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,7 +8,6 @@ metadata:
     app: gitops-demo
     managed-by: kustomize
   annotations:
-    # Argo CD will update this annotation during sync
     deployment.kubernetes.io/revision: "1"
 spec:
   replicas: 2
@@ -17,17 +17,15 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1        # Allow one extra pod during update
-      maxUnavailable: 0  # Never reduce below desired replicas
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
         app: gitops-demo
       annotations:
-        # Forces pod restart when ConfigMap changes
         checksum/config: "placeholder"
     spec:
-      # ── Security context (pod level) ────────────────────────
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
@@ -35,27 +33,18 @@ spec:
         fsGroup: 1001
         seccompProfile:
           type: RuntimeDefault
-
-      # ── Graceful shutdown ─────────────────────────────────────
       terminationGracePeriodSeconds: 30
-
       containers:
         - name: gitops-demo
-          # Image tag is managed by Kustomize image replacement in overlays
           image: ghcr.io/owner/kubernetes-gitops-deployment:latest
           imagePullPolicy: Always
-
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
-
-          # ── Environment from ConfigMap ───────────────────────
           envFrom:
             - configMapRef:
                 name: gitops-demo-config
-
-          # ── Additional env vars ──────────────────────────────
           env:
             - name: POD_NAME
               valueFrom:
@@ -65,8 +54,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-
-          # ── Resource management ──────────────────────────────
           resources:
             requests:
               cpu: "100m"
@@ -74,16 +61,12 @@ spec:
             limits:
               cpu: "500m"
               memory: "256Mi"
-
-          # ── Startup probe (gives app time to initialise) ─────
           startupProbe:
             httpGet:
               path: /health
               port: http
             failureThreshold: 30
             periodSeconds: 3
-
-          # ── Liveness probe (restart if unhealthy) ────────────
           livenessProbe:
             httpGet:
               path: /health
@@ -93,8 +76,6 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
             successThreshold: 1
-
-          # ── Readiness probe (route traffic only when ready) ──
           readinessProbe:
             httpGet:
               path: /ready
@@ -104,11 +85,9 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
             successThreshold: 1
-
-          # ── Container security context ───────────────────────
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false   # gunicorn needs /tmp
+            readOnlyRootFilesystem: false
             runAsNonRoot: true
             runAsUser: 1001
             capabilities:

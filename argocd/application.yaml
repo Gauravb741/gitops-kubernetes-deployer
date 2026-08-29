@@ -1,3 +1,4 @@
+---
 # ── Argo CD Application Manifest ──────────────────────────────────────────────
 # Deploys the GitOps demo application using the local overlay.
 #
@@ -8,7 +9,6 @@
 #   - Argo CD installed in the argocd namespace
 #   - The repository is accessible (public or credentials configured)
 # ─────────────────────────────────────────────────────────────────────────────
-
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -16,51 +16,35 @@ metadata:
   namespace: argocd
   labels:
     project: kubernetes-gitops-deployment
-  # Finalizer ensures Argo CD cleans up managed resources on deletion
   finalizers:
     - resources-finalizer.argocd.argoproj.io
-
 spec:
-  # ── Project scope ──────────────────────────────────────────
   project: default
-
-  # ── Source: Git repository ─────────────────────────────────
   source:
-    # ⚠️  Update repoURL to match your actual GitHub repository URL
     repoURL: https://github.com/YOUR_GITHUB_USERNAME/kubernetes-gitops-deployment.git
-    targetRevision: HEAD   # Track the default branch (main)
+    targetRevision: HEAD
     path: kubernetes/overlays/local
-
-  # ── Destination: Kubernetes cluster ────────────────────────
   destination:
-    server: https://kubernetes.default.svc   # In-cluster deployment
+    server: https://kubernetes.default.svc
     namespace: gitops-demo
-
-  # ── Sync policy ────────────────────────────────────────────
   syncPolicy:
     automated:
-      prune: true      # Remove resources no longer defined in Git
-      selfHeal: true   # Revert manual changes that drift from Git state
+      prune: true
+      selfHeal: true
       allowEmpty: false
-
     syncOptions:
-      - CreateNamespace=true      # Auto-create gitops-demo namespace
+      - CreateNamespace=true
       - PrunePropagationPolicy=foreground
       - PruneLast=true
-      - ApplyOutOfSyncOnly=true   # Only sync resources that differ
-
-    # Retry on transient failures (e.g., API server temporarily unavailable)
+      - ApplyOutOfSyncOnly=true
     retry:
       limit: 5
       backoff:
         duration: 5s
         factor: 2
         maxDuration: 3m
-
-  # ── Health check ignorance rules ───────────────────────────
   ignoreDifferences:
     - group: apps
       kind: Deployment
       jsonPointers:
-        # Ignore replica count differences (if HPA is managing replicas)
         - /spec/replicas

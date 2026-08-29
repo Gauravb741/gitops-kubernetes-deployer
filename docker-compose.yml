@@ -1,8 +1,7 @@
+---
 # ── Docker Compose — local development & testing ──────────────────────────────
 # Usage: docker compose up --build
 # The application will be available at http://localhost:8080
-
-version: "3.9"
 
 services:
   app:
