@@ -1,8 +1,5 @@
+---
 # ── CI Workflow — Test, Lint, Validate ────────────────────────────────────────
-# Triggers on every push and pull request.
-# Runs Python tests and validates Kubernetes manifests.
-# ─────────────────────────────────────────────────────────────────────────────
-
 name: CI — Test & Validate
 
 on:
@@ -12,10 +9,9 @@ on:
     branches: [main, master]
 
 permissions:
-  contents: read   # Minimum required for checkout
+  contents: read
 
 jobs:
-  # ── Job: Python tests ─────────────────────────────────────────────────────
   test:
     name: Python Tests
     runs-on: ubuntu-latest
@@ -60,7 +56,6 @@ jobs:
           path: coverage.xml
           retention-days: 7
 
-  # ── Job: YAML lint ────────────────────────────────────────────────────────
   yaml-lint:
     name: YAML Lint
     runs-on: ubuntu-latest
@@ -74,11 +69,9 @@ jobs:
 
       - name: Lint YAML files
         run: |
-          yamllint \
-            -d '{extends: default, rules: {line-length: {max: 150}, truthy: {allowed-values: ["true", "false"]}}}' \
+          yamllint -c .yamllint.yml \
             kubernetes/ argocd/ docker-compose.yml
 
-  # ── Job: Kubernetes manifest validation ──────────────────────────────────
   validate-manifests:
     name: Validate Kubernetes Manifests
     runs-on: ubuntu-latest
