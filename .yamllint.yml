@@ -6,7 +6,22 @@ rules:
     max: 150
   truthy:
     allowed-values: ["true", "false"]
-  new-line-at-end-of-file:
-    level: warning
   document-start:
     level: warning
+  new-line-at-end-of-file:
+    level: warning
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: false
+  empty-lines:
+    max: 2
+    max-start: 0
+    max-end: 0
+  trailing-spaces: enable
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
