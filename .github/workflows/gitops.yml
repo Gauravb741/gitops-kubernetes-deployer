@@ -1,9 +1,4 @@
-# ── GitOps Update Workflow ────────────────────────────────────────────────────
-# After the Docker image is built and pushed, update the Kustomize overlay
-# with the new immutable image tag. Argo CD detects the Git change and
-# synchronises the cluster automatically.
-# ─────────────────────────────────────────────────────────────────────────────
-
+---
 name: GitOps — Update Deployment
 
 on:
@@ -13,26 +8,31 @@ on:
     branches: [main, master]
 
 permissions:
-  contents: write   # Required to commit the updated kustomization
+  contents: write
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   update-gitops-config:
     name: Update Kustomize Image Tag
     runs-on: ubuntu-latest
-    # Only run if the Docker workflow succeeded
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Use a token that allows pushing back to the repo
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
+
+      # ── Lowercase image name ──────────────────────────────────
+      - name: Compute lowercase image name
+        id: image-name
+        run: |
+          IMAGE_NAME="${{ env.REGISTRY }}/${{ github.repository }}"
+          IMAGE_NAME_LOWER="${IMAGE_NAME,,}"
+          echo "value=${IMAGE_NAME_LOWER}" >> "$GITHUB_OUTPUT"
 
       - name: Install kustomize
         run: |
@@ -43,7 +43,6 @@ jobs:
       - name: Compute new image tag
         id: compute-tag
         run: |
-          # Use the short SHA of the triggering workflow commit
           SHA="${{ github.event.workflow_run.head_sha }}"
           SHORT_SHA="${SHA:0:7}"
           echo "sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
@@ -53,14 +52,10 @@ jobs:
       - name: Update Kustomize image tag
         working-directory: kubernetes/overlays/local
         run: |
-          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          IMAGE="${{ steps.image-name.outputs.value }}"
           NEW_TAG="${{ steps.compute-tag.outputs.new_tag }}"
-
           echo "Updating image ${IMAGE} to tag ${NEW_TAG}"
-
-          kustomize edit set image \
-            "${IMAGE}=${IMAGE}:${NEW_TAG}"
-
+          kustomize edit set image "${IMAGE}=${IMAGE}:${NEW_TAG}"
           echo "Updated kustomization.yaml:"
           cat kustomization.yaml
 
@@ -72,10 +67,11 @@ jobs:
       - name: Commit and push updated configuration
         run: |
           NEW_TAG="${{ steps.compute-tag.outputs.new_tag }}"
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          BRANCH="${BRANCH:-main}"
 
           git add kubernetes/overlays/local/kustomization.yaml
 
-          # Only commit if there are actual changes
           if git diff --staged --quiet; then
             echo "No changes to commit — image tag already up to date."
           else
@@ -86,8 +82,7 @@ jobs:
           New tag     : ${NEW_TAG}
 
           [skip ci]"
-
-            git push origin HEAD:${{ github.event.workflow_run.head_branch }}
+            git push origin "HEAD:${BRANCH}"
             echo "Pushed GitOps configuration update."
           fi
 
@@ -98,7 +93,5 @@ jobs:
           echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
           echo "|-------|-------|" >> "$GITHUB_STEP_SUMMARY"
           echo "| New Image Tag | \`${{ steps.compute-tag.outputs.new_tag }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Registry | \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Image | \`${{ steps.image-name.outputs.value }}\` |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Overlay Updated | \`kubernetes/overlays/local/kustomization.yaml\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Argo CD will detect this change and synchronise the cluster automatically." >> "$GITHUB_STEP_SUMMARY"

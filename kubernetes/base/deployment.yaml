@@ -36,7 +36,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: gitops-demo
-          image: ghcr.io/owner/kubernetes-gitops-deployment:latest
+          image: ghcr.io/gauravb741/gitops-kubernetes-deployer:latest
           imagePullPolicy: Always
           ports:
             - name: http

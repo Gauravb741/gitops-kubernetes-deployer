@@ -9,7 +9,7 @@ resources:
   - ../../base
 
 images:
-  - name: ghcr.io/owner/kubernetes-gitops-deployment
+  - name: ghcr.io/gauravb741/gitops-kubernetes-deployer
     newTag: latest
 
 patches:
