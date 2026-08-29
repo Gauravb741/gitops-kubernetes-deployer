@@ -21,7 +21,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/YOUR_GITHUB_USERNAME/kubernetes-gitops-deployment.git
+    repoURL: https://github.com/Gauravb741/gitops-kubernetes-deployer.git
     targetRevision: HEAD
     path: kubernetes/overlays/local
   destination:
